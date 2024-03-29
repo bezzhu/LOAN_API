@@ -1,7 +1,6 @@
 ﻿using LOAN_API.Data;
 using LOAN_API.Models.DTO;
 using System.Security.Claims;
-using System.Text;
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +52,7 @@ namespace LOAN_API.Services
 
                 if (user == null || user.IsBlocked)
                 {
-                    throw new Exception("User is blocked or does not exist.");
+                    throw new Exception("User is blocked");
                 }
 
                 var newLoan = new Loan
@@ -71,31 +70,39 @@ namespace LOAN_API.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to add loan", ex);
+                throw new Exception(ex.Message);
             }
         }
         public async Task UpdateLoanAsync(int loanId, LoanDto loanDto)
         {
-            var currentUserId = int.Parse(_httpContextAccessor.HttpContext.User
+            try
+            {
+                var currentUserId = int.Parse(_httpContextAccessor.HttpContext.User
                                     .FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            
-            var loan = await _context.Loans.FindAsync(loanId) ?? throw new Exception("Loan not found");
-            
-            if (loan.UserId != currentUserId)
-            {
-                throw new Exception("No permission to update this loan");
-            }
-            if (loan.Status != LoanStatus.InProcess)
-            {
-                throw new Exception($"Cannot update a loan with status: {Enum.GetName(typeof(LoanStatus), loan.Status)}");
-            }
 
-            loan.LoanType = loanDto.LoanType;
-            loan.Amount = loanDto.Amount;
-            loan.Currency = loanDto.Currency;
-            loan.Period = loanDto.Period;
-                
-            await _context.SaveChangesAsync();
+                var loan = await _context.Loans.FindAsync(loanId) ?? throw new Exception("Loan not found");
+
+                if (loan.UserId != currentUserId)
+                {
+                    throw new Exception("No permission to update this loan");
+                }
+                if (loan.Status != LoanStatus.InProcess)
+                {
+                    throw new Exception($"Cannot update a loan with status: {Enum.GetName(typeof(LoanStatus), loan.Status)}");
+                }
+
+                loan.LoanType = loanDto.LoanType;
+                loan.Amount = loanDto.Amount;
+                loan.Currency = loanDto.Currency;
+                loan.Period = loanDto.Period;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
         public async Task DeleteLoanAsync(int loanId)
         {
@@ -121,7 +128,7 @@ namespace LOAN_API.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete loan", ex);
+                throw new Exception(ex.Message);
             }
         }
     }

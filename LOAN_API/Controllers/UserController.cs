@@ -35,7 +35,7 @@ namespace LOAN_API.Controllers
             return user;
         }
        
-        [HttpPost("AddLoan")]
+        [HttpPost("addLoan")]
         public async Task<ActionResult<Loan>> AddLoan([FromBody] LoanDto loanDto)
         {
             try
@@ -56,12 +56,12 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest($"Failed to add loan: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
-        [HttpPut("UpdateLoan/{loanId}")]
+        [HttpPut("updateLoan/{loanId}")]
         public async Task<ActionResult<Loan>> UpdateLoan(int loanId , [FromBody] LoanDto loanDto)
         {
             try
@@ -82,11 +82,11 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest($"Failed to update loan: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
-        [HttpDelete("DeleteLoan/{loanId}")]
+        [HttpDelete("deleteLoan/{loanId}")]
         public async Task<ActionResult<Loan>> DeleteLoan(int loanId)
         {
             try
@@ -98,7 +98,7 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest($"Failed to delete loan: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }

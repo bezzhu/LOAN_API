@@ -84,7 +84,7 @@ namespace LOAN_API_Tests
             var expectedErrorMessage = "Incorrect UserName or Password";
 
             _authenticationService.Setup(service => service.LoginAsync(loginDto))
-                                     .ThrowsAsync(new Exception("Invalid credentials"));
+                                     .ThrowsAsync(new Exception("Incorrect UserName or Password"));
 
             // Act
             var result = await _authenticationController.Login(loginDto);

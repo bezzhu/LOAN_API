@@ -1,7 +1,6 @@
 ﻿using LOAN_API.Models.DTO;
 using LOAN_API.Models;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
@@ -29,16 +28,16 @@ namespace LOAN_API.Services
         }
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDto.UserName);
-            var loan = await _context.Loans.FirstOrDefaultAsync(u => u.UserId == user.Id);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+            try
             {
-                throw new UnauthorizedAccessException("Invalid credentials");
-            }
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDto.UserName);
 
-            var authClaims = new List<Claim>
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+                {
+                    throw new Exception("Incorrect UserName or Password");
+                }
+
+                var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Name, user.UserName.ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -46,7 +45,14 @@ namespace LOAN_API.Services
                 new(ClaimTypes.Role, user.Role),
             };
 
-            return GenerateNewJsonWebToken(authClaims);
+                return GenerateNewJsonWebToken(authClaims);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
         private static string GenerateNewJsonWebToken(List<Claim> claims)
         {
@@ -96,7 +102,7 @@ namespace LOAN_API.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error during user registration: {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
     }

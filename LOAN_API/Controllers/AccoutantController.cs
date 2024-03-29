@@ -40,7 +40,7 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest();
+                return BadRequest($"Failed to getAlLoans: {ex.Message}");
             }
 
         }
@@ -70,7 +70,7 @@ namespace LOAN_API.Controllers
             }
         }
 
-        [HttpPut("BlockUser/{userId}")]
+        [HttpPut("blockUser/{userId}")]
         public async Task<ActionResult> BlockUser(int userId)
         {
             try
@@ -81,7 +81,7 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest($"Failed to block user {ex.Message}");
+                return BadRequest($"Failed to block user: {ex.Message}");
             }
 
         }

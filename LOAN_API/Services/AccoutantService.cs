@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LOAN_API.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Linq;
 using System;
 
@@ -46,30 +44,23 @@ namespace LOAN_API.Services
 
         public async Task<ActionResult<IEnumerable<Loan>>> GetLoansAsync(int userId)
         {
-            try
-            {
-                var loans = await _context.Loans
-                .Where(l => l.UserId == userId)
-                .ToListAsync();
-
-                if (loans == null || loans.Count == 0)
-                {
-                    throw new Exception("Loan not found");
-                }
-
-                return loans;
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error during getAllLoans: {ex.Message}");
-            }
             
+            var loans = await _context.Loans
+            .Where(l => l.UserId == userId)
+            .ToListAsync();
+
+            if (loans == null || loans.Count == 0)
+            {
+                throw new Exception("Loan not found");
+            }
+
+            return loans;
+
         }
 
         public async Task UpdateLoanAsync(int loanId, LoanDto updatedLoanDto)
         {
+            
             var loan = await _context.Loans.FindAsync(loanId) ?? throw new Exception("Loan not found");
             loan.LoanType = updatedLoanDto.LoanType;
             loan.Amount = updatedLoanDto.Amount;
@@ -78,6 +69,8 @@ namespace LOAN_API.Services
 
             _context.Update(loan);
             await _context.SaveChangesAsync();
+           
+            
         }
 
         

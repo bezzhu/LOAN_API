@@ -57,7 +57,7 @@ namespace LOAN_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest("Incorrect UserName or Password");
+                return BadRequest(ex.Message);
             }
         }
     }
