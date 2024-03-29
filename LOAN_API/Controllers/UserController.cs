@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LOAN_API.Controllers
@@ -28,9 +27,8 @@ namespace LOAN_API.Controllers
         [HttpGet("getInfo")]
         public async Task<ActionResult<User>> GetInfo()
         {
-            var currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
            
-            var user = await  _userService.GetInfoAsync(currentUserId);
+            var user = await  _userService.GetInfoAsync();
 
             return user;
         }
@@ -84,7 +82,6 @@ namespace LOAN_API.Controllers
                 _logger.LogError(ex.Message);
                 return BadRequest(ex.Message);
             }
-
         }
         [HttpDelete("deleteLoan/{loanId}")]
         public async Task<ActionResult<Loan>> DeleteLoan(int loanId)
@@ -102,6 +99,7 @@ namespace LOAN_API.Controllers
             }
 
         }
+
         
 
     }

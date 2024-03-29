@@ -15,12 +15,11 @@ namespace LOAN_API.Controllers
     [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
-    public class AccoutantController : Controller
+    public class AccountantController : Controller
     {
         private readonly IAccoutantService _accoutantService;
-        private readonly ILogger<AccoutantController> _logger;
-        public AccoutantController(IAccoutantService accoutantService
-                                            ,ILogger<AccoutantController> logger)
+        private readonly ILogger<AccountantController> _logger;
+        public AccountantController(IAccoutantService accoutantService,ILogger<AccountantController> logger)
         {
             _accoutantService = accoutantService;
             _logger = logger;

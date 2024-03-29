@@ -1,6 +1,4 @@
 using LOAN_API.Controllers;
-using LOAN_API.Data;
-using LOAN_API.Models;
 using LOAN_API.Models.DTO;
 using LOAN_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +20,6 @@ namespace LOAN_API_Tests
             _authenticationService = new Mock<IAuthenticationService>();
             _logger = new Mock<ILogger<AuthenticationController>>();
             _authenticationController = new AuthenticationController(_authenticationService.Object, _logger.Object);
-
         }
         [Fact]
         public async Task RegisterUserWithValidUserReturnsOkAsync()
@@ -47,7 +44,6 @@ namespace LOAN_API_Tests
             var okResult = result as OkObjectResult;
             Assert.Equal("User register successfully.", okResult.Value);
             _authenticationService.Verify(service => service.RegisterAsync(userDto), Times.Once);
-
         }
         [Fact]
         public async Task Login_WithValidCredentials_ReturnsOkWithToken()

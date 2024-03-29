@@ -12,7 +12,7 @@ namespace LOAN_API.Services
 {
     public interface IUserService
     {
-        Task<ActionResult<User>> GetInfoAsync(int id);
+        Task<ActionResult<User>> GetInfoAsync();
         Task AddLoanAsync(LoanDto loanDto);
         Task UpdateLoanAsync(int loanId, LoanDto loanDto);
         Task DeleteLoanAsync(int loanId);
@@ -28,12 +28,13 @@ namespace LOAN_API.Services
             _httpContextAccessor = httpContextAccessor;
         }
    
-        public async Task<ActionResult<User>> GetInfoAsync(int id)
+        public async Task<ActionResult<User>> GetInfoAsync()
         {
-
+            var currentUserId = int.Parse(_httpContextAccessor.HttpContext.User
+                                    .FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var userEntity = await _context.Users
                                         .Include(u => u.Loans)
-                                        .FirstOrDefaultAsync(u => u.Id == id); 
+                                        .FirstOrDefaultAsync(u => u.Id == currentUserId); 
 
             if (userEntity == null)
             {
