@@ -13,6 +13,17 @@ namespace LOAN_API_Tests
 {
     public class AuthenticationControllerTests
     {
+        private readonly Mock<IAuthenticationService> _authenticationService;
+        private readonly Mock<ILogger<AuthenticationController>> _logger;
+        private readonly AuthenticationController _authenticationController;
+
+        public AuthenticationControllerTests()
+        {
+            _authenticationService = new Mock<IAuthenticationService>();
+            _logger = new Mock<ILogger<AuthenticationController>>();
+            _authenticationController = new AuthenticationController(_authenticationService.Object, _logger.Object);
+
+        }
         [Fact]
         public async Task RegisterUserWithValidUserReturnsOkAsync()
         {
@@ -26,20 +37,16 @@ namespace LOAN_API_Tests
                 Income = 50000.0,
                 Email = "johndoe@gmail.com",
                 Password = "password123"
-            };
-
-            var authenticationServiceMock = new Mock<IAuthenticationService>();
-            var loggerMock = new Mock<ILogger<AuthenticationController>>();
-            var userController = new AuthenticationController(authenticationServiceMock.Object, loggerMock.Object);
+            };;
 
             // Act
-            var result = await userController.Register(userDto);
+            var result = await _authenticationController.Register(userDto);
 
             // Assert
             Assert.IsType<OkObjectResult>(result); 
             var okResult = result as OkObjectResult;
-            Assert.Equal("User register successfully.", okResult.Value); 
-            authenticationServiceMock.Verify(service => service.RegisterAsync(userDto), Times.Once);
+            Assert.Equal("User register successfully.", okResult.Value);
+            _authenticationService.Verify(service => service.RegisterAsync(userDto), Times.Once);
 
         }
         [Fact]
@@ -52,17 +59,13 @@ namespace LOAN_API_Tests
                 Password = "validPassword"
             };
 
-            var expectedToken = "validToken"; 
+            var expectedToken = "validToken";
 
-            var authenticationServiceMock = new Mock<IAuthenticationService>();
-            authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+            _authenticationService.Setup(service => service.LoginAsync(loginDto))
                                      .ReturnsAsync(expectedToken);
 
-            var loggerMock = new Mock<ILogger<AuthenticationController>>();
-            var authenticationController = new AuthenticationController(authenticationServiceMock.Object, loggerMock.Object);
-
             // Act
-            var result = await authenticationController.Login(loginDto);
+            var result = await _authenticationController.Login(loginDto);
 
             // Assert
             var okObjectResult = Assert.IsType<OkObjectResult>(result);
@@ -80,15 +83,11 @@ namespace LOAN_API_Tests
 
             var expectedErrorMessage = "Incorrect UserName or Password";
 
-            var authenticationServiceMock = new Mock<IAuthenticationService>();
-            authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+            _authenticationService.Setup(service => service.LoginAsync(loginDto))
                                      .ThrowsAsync(new Exception("Invalid credentials"));
 
-            var loggerMock = new Mock<ILogger<AuthenticationController>>();
-            var authenticationController = new AuthenticationController(authenticationServiceMock.Object, loggerMock.Object);
-
             // Act
-            var result = await authenticationController.Login(loginDto);
+            var result = await _authenticationController.Login(loginDto);
 
             // Assert
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
